@@ -966,7 +966,7 @@ debug=FALSE
 verbose=FALSE
 dryrun=FALSE
 realm=
-extras=
+extras=--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel
 gui=TRUE
 notification=FALSE
 speed=1.0
