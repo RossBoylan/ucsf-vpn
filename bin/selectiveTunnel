@@ -68,8 +68,12 @@
 # 1) Maybe dnsmasq can do something like that
 # 2) Parse dns packets going out via tunnel and redirect them to original dns-server
 
+# RB created this file by copying
+# cp /usr/share/vpnc-scripts/vpnc-script selectiveTunnel
+# and then enabling debugging
+
 #env | sort
-#set -x
+set -x
 
 # =========== script (variable) setup ====================================
 
@@ -81,6 +85,7 @@ HOOKS_DIR=/etc/vpnc
 DEFAULT_ROUTE_FILE=/var/run/vpnc/defaultroute
 RESOLV_CONF_BACKUP=/var/run/vpnc/resolv.conf-backup
 SCRIPTNAME=`basename $0`
+RANGES_FILE=/home/ross/src/ucsf-vpn/UCSFIntranet.txt
 
 # some systems, eg. Darwin & FreeBSD, prune /var/run on boot
 if [ ! -d "/var/run/vpnc" ]; then
@@ -239,9 +244,19 @@ if [ -n "$IPROUTE" ]; then
 	}
 
 	set_default_route() {
-		$IPROUTE route | grep '^default' | fix_ip_get_output > "$DEFAULT_ROUTE_FILE"
-		$IPROUTE route replace default dev "$TUNDEV"
-		$IPROUTE route flush cache
+	    # old code
+	    #$IPROUTE route | grep '^default' | fix_ip_get_output > "$DEFAULT_ROUTE_FILE"
+	    #$IPROUTE route replace default dev "$TUNDEV"
+	    # We actually leave the default route, put put all intranet through the
+	    # tunnel.
+	    # Deliberately use add rather than replace because we make
+	    # no effort to preserve old routes to be restored.
+	    grep -e '^[0-9]' "$RANGES_FILE" |
+		(while IFS=  read -r x
+		 do
+		     $IPROUTE route add $x dev "$TUNDEV";
+		 done)
+	    $IPROUTE route flush cache
 	}
 
 	set_network_route() {
@@ -284,6 +299,14 @@ if [ -n "$IPROUTE" ]; then
 			$IPROUTE route flush cache
 			rm -f -- "$DEFAULT_ROUTE_FILE"
 		fi
+		# deleting the tunnel device alone seems to remove the following
+		# entries, but just in case be explicit
+		grep -e '^[0-9]' "$RANGES_FILE" |
+		(while IFS=  read -r x
+		 do
+		     $IPROUTE route del $x dev "$TUNDEV";
+		 done)
+	    $IPROUTE route flush cache
 	}
 
 	del_network_route() {
