@@ -85,7 +85,7 @@ HOOKS_DIR=/etc/vpnc
 DEFAULT_ROUTE_FILE=/var/run/vpnc/defaultroute
 RESOLV_CONF_BACKUP=/var/run/vpnc/resolv.conf-backup
 SCRIPTNAME=`basename $0`
-RANGES_FILE=/home/ross/src/ucsf-vpn/UCSFIntranet.txt
+RANGES_FILE=$HOOKS_DIR/UCSFIntranet
 
 # some systems, eg. Darwin & FreeBSD, prune /var/run on boot
 if [ ! -d "/var/run/vpnc" ]; then
