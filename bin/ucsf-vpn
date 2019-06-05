@@ -155,13 +155,13 @@ function help() {
 # -------------------------------------------------------------------------
 function connection_details() {
     mdebug "connection_details()"
+    mdebug "Querying http://help.ucsf.edu/HelpApps/ipNetVerify.php for connection info"
     if [[ -z ${PUBLIC_INFO} ]]; then
-      mdebug "Querying https://ipinfo.io/ip for public IP:"
-      PUBLIC_INFO=$(curl --silent https://ipinfo.io/json)
-      export PUBLIC_INFO
+	PUBLIC_INFO="$(curl --silent http://help.ucsf.edu/HelpApps/ipNetVerify.php | sed -E -n '\%^[[:space:]]*<td>(.+)</td><td>(<.*>)?([^<>]+)(<.*>)?</td>[[:space:]]*$%Is//\1->\3/p')"
+	export PUBLIC_INFO
     fi
     mdebug "Public connection information: $PUBLIC_INFO"
-    if [[ -z ${PUBLIC_INFO} ]]; then
+    if [[ -z "${PUBLIC_INFO}" ]]; then
         merror "Failed to infer public IP information"
     fi
     echo "$PUBLIC_INFO"
@@ -170,7 +170,7 @@ function connection_details() {
 function public_ip() {
     mdebug "public_ip($*)"
     if [[ $1 == "" ]]; then
-        connection_details | grep -F "ip" | sed -E 's/[ ",]//g' | cut -d : -f 2
+        connection_details | sed -n -E '\%IP Address->([^[:space:]]+)%Is//\1/p'
     else
         echo "$1"
     fi
@@ -178,7 +178,7 @@ function public_ip() {
 
 function public_hostname() {
     mdebug "public_hostname()"
-    connection_details | grep -F "hostname" | sed -E 's/[ ",]//g' | cut -d : -f 2
+    echo "unknown"
 }
 
 function is_online() {
@@ -192,11 +192,7 @@ function is_online() {
 
 function is_connected() {
     mdebug "is_connected($*)"
-    ## NOTE: It appears that field 'hostname' is not always returned, e.g. when
-    ## calling it multiple times in a row some calls done report that field.
-    ## Because of this, we test the status on the field 'org' instead.
-    connection_details | grep -q -E "org.*[:].*AS5653 University of California San Francisco"
-    # shellcheck disable=SC2181
+    connection_details | grep -q -E "Connected to UCSF Network->Yes"
     if [[ $? -eq 0 ]]; then
         echo TRUE
     else
