@@ -962,7 +962,9 @@ debug=FALSE
 verbose=FALSE
 dryrun=FALSE
 realm=
-extras=--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel
+# RB got sick of waiting default 6 minutes when connection fails
+# there is no (easy) way to kill it sooner
+extras="--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel --reconnect-timeout=50"
 gui=TRUE
 notification=FALSE
 speed=1.0
