@@ -247,7 +247,7 @@ if [ -n "$IPROUTE" ]; then
 	    # old code
 	    #$IPROUTE route | grep '^default' | fix_ip_get_output > "$DEFAULT_ROUTE_FILE"
 	    #$IPROUTE route replace default dev "$TUNDEV"
-	    # We actually leave the default route, put put all intranet through the
+	    # We actually leave the default route, but put all intranet through the
 	    # tunnel.
 	    # Deliberately use add rather than replace because we make
 	    # no effort to preserve old routes to be restored.
