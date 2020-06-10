@@ -965,6 +965,10 @@ realm=
 # RB got sick of waiting default 6 minutes when connection fails
 # there is no (easy) way to kill it sooner
 extras="--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel --reconnect-timeout=50"
+# next works around an expired certificate
+# It is no longer necessary since updates to my local certs.
+#extras="--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel --reconnect-timeout=50 --servercert pin-sha256:WFCZxgGY5CDBLIUhjvvTNOtu3567gx1QmgTUesyspoQ="
+
 gui=TRUE
 notification=FALSE
 speed=1.0
