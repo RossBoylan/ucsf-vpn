@@ -122,6 +122,7 @@
 ### License: GPL (>= 2.1) [https://www.gnu.org/licenses/gpl.html]
 ### Source: https://github.com/HenrikBengtsson/ucsf-vpn
 call="$0 $*"
+export SCRIPT_DIR=$(dirname $0)
 
 export PULSEPATH=${PULSEPATH:-/usr/local/pulse}
 export PATH="${PULSEPATH}:${PATH}"
@@ -1284,7 +1285,7 @@ notification=false
 # RB got sick of waiting default 6 minutes when connection fails
 # there is no (easy) way to kill it sooner.
 # However, the problem may have been fixed by more recent code changes.
-extras="--script=/home/ross/src/ucsf-vpn/bin/selectiveTunnel --reconnect-timeout=50"
+extras="--script=${SCRIPT_DIR}/selectiveTunnel --reconnect-timeout=50"
 
 speed=1.0
 
